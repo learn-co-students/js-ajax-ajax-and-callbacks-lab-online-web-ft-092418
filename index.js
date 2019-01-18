@@ -20,7 +20,8 @@ function showRepositories(response) {
 }
 
 function showCommits(el) {
-    $.get(`https://api.github.com/repos/${el.dataset.owner}/${el.dataset.repo}/commits`, function(data) {
+    debugger
+    $.get(`https://api.github.com/repos/${el.dataset.owner}/${el.dataset.repository}/commits`, function(data) {
         const template = Handlebars.compile(document.getElementById('commits-template').innerHTML)
         document.getElementById('details').innerHTML = template(data)
     }).fail(function(error) {
