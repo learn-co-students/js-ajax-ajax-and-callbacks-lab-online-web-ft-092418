@@ -16,16 +16,29 @@
       .flexbox-container > div:first-child {
         margin-right: 20px;
       }
+      #errors {
+        color: rgb(177, 11, 11)
+      }
     </style>
   </head>
   <body>
     <main id="main">
-      <div id="errors"></div>
     </main>
     <div class="flexbox-container">
       <div>
         <h3>Repositories</h3>
+        <div>
+          <form>
+            Search Repositories:
+            <input type="text" id="searchTerms"><br>
+          </form>
+        </div>
+        <div>
+          <p><a href="#" onclick='searchRepositories()'>Search</a></p>
+        </div>
         <div id="results"></div>
+        <div id='errors'>
+        </div>
       </div>
       <div>
         <h3>Details</h3>
@@ -33,6 +46,46 @@
       </div>
     </div>
     <script src="jquery-3.1.0.min.js"></script>
+    <script id='repository-template' type='text/x-handlebars-template'>
+      <ul>
+        {{#each this}}
+          <li>
+            <h2><a href="{{html_url}}">{{name}}</a></h2>
+            {{> authorPartial owner}}
+            <!-- I need to get showCommits to have access to the repo that we're currently filling out -- BUT HOW -->
+            <!--  -->
+            <!--  -->
+            <!--  -->
+            <p><a href="#" onclick='showCommits("{{commits_url}}");return false;'>Show Commits </a></p>
+            <p>Watchers: {{watchers_count}}</p>
+            <p>Forks: {{forks_count}}</p>
+            <p>Issues: {{open_issues_count}}</p>
+            <p>Description: {{description}}</p>
+            <p>Commits URL: {{commits_url}}</p>
+          </li>
+        {{/each}}
+      </ul>
+    </script>
+    <script id='commit-template' type='text/x-handlebars-template'>
+      <ul>
+        {{#each this}}
+          <li>
+            {{> authorPartial committer}}
+            <p>SHA: {{sha}}</p>
+          </li>
+        {{/each}}
+      </ul>
+    </script>
+    <script id='error-template' type='text/x-handlebars-template'>
+      <p>error: {{statusText}}</p>
+    </script>
+    <script id='author-partial-template' type='text/x-handlebars-template'>
+      <section>
+          <header><h4>Created By <a href="http://www.github.com/{{login}}">{{login}}</a></h4></header>
+          <img src='{{avatar_url}}' height ='32' width='32'>
+        </section> 
+    </script>
+    <script src="handlebars.js"></script>
     <script src="index.js"></script>
   </body>
 </html>
