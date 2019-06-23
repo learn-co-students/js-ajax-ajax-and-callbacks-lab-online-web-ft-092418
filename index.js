@@ -1,36 +1,43 @@
+var displayError = () => $('#errors').html("I'm sorry, there's been an error. Please try again.")
+
+var renderCommit = (commit) => {
+  return `<li><h3>${commit.sha}</h3><p>${commit.commit.message}</p></li>`
+}
+
+var renderCommits = (data) => {
+  let result = data.map((commit) => renderCommit(commit)).join('')
+  return `<ul>${result}</ul>`
+}
+
+var showCommits = (el) => {
+  $.get(`https://api.github.com/repos/${el.dataset.owner}/${el.dataset.repository}/commits`, data => {
+    $('#details').html(renderCommits(data))
+  }).fail(error => {
+    displayError()
+  })
+}
+
+var renderSearchResult = (result) => {
+  return `
+      <div>
+        <h2><a href="${result.html_url}">${result.name}</a></h2>
+        <p><a href="#" data-repository="${result.name}" data-owner="${result.owner.login}" onclick="showCommits(this)">Show Commits</a></p>
+        <p>${result.description}</p>
+      </div>
+      <hr>
+    `
+}
+
+var renderSearchResults = (data) => data.items.map(result => renderSearchResult(result))
+
+var searchRepositories = () => {
+  const searchTerms = $('#searchTerms').val()
+  $.get(`https://api.github.com/search/repositories?q=${searchTerms}`, data => {
+    $('#results').html(renderSearchResults(data))
+  }).fail(error => {
+    displayError()
+  })
+}
 
 $(document).ready(function () {
 });
-
-function searchRepositories() {
-  let terms = $('#searchTerms')[0].value
-  $.get(`https://api.github.com/search/repositories?q=${terms}`, function (data) {
-    let response = data.items
-    showRepositories(response)
-
-  }).fail(function (error) {
-    displayError()
-  })
-}
-
-function showRepositories(response) {
-  const template = Handlebars.compile(document.getElementById('repository-template').innerHTML);
-  const repoList = template(response);
-
-  document.getElementById('results').innerHTML = repoList
-}
-
-function showCommits(el) {
-  
-  $.get(`https://api.github.com/repos/${el.dataset.owner}/${el.dataset.repository}/commits`, function (data) {
-    const template = Handlebars.compile(document.getElementById('commits-template').innerHTML)
-    document.getElementById('details').innerHTML = template(data)
-  }).fail(function (error) {
-    displayError()
-  })
-}
-
-function displayError() {
-  let message = '<p>I\'m sorry, there\'s been an error. Please try again.</p>'
-  document.getElementById('errors').innerHTML = message
-}
